@@ -6,11 +6,20 @@ using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
-    internal class VideoPost:Post
+    internal class VideoPost : Post
     {
-        public string VideoURL {  get; set; }
-        public float Length { get; set; }
+
+        //member fields
+
+        protected bool isPlaying = false;
+        protected int currentDuration = 0;
+        Timer timer;
+        //properties
+        protected string VideoURL { get; set; }
+        protected int Length { get; set; }
         public VideoPost() { }
+
+
 
         public VideoPost(string title, string sendByUsername, bool isPublic, string videoURL, int Length)
         {
@@ -26,11 +35,41 @@ namespace ConsoleApp1
         {
             return String.Format("{0} - {1} - {2} - {3}  by {4}", this.ID, this.Title, this.VideoURL, this.Length, this.SendByUsername);
         }
-        public static void  Play()
+      
+        public void Play()
         {
-            Console.WriteLine("Video has now started playing");
-            
+            if (!isPlaying)
+            {
+                Console.WriteLine("Playing");
+                timer = new Timer(TimerCallback, null, 0, 1000);
+            }
+
         }
 
+        private void TimerCallback(object o)
+        {
+            if (currentDuration < Length)
+            {
+                currentDuration++;
+                Console.WriteLine("Video at {0}s", currentDuration);
+                GC.Collect();
+            }
+            else
+            {
+                Stop();
+            }
+        }
+        public void Stop()
+        {
+            if (isPlaying)
+            {
+                Console.WriteLine("Stopped at {0}", currentDuration);
+                currentDuration = 0;
+                timer.Dispose();
+
+            }
+
+        }
     }
 }
+
